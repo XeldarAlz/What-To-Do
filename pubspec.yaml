@@ -1,0 +1,36 @@
+name: what_to_do_app
+description: "Çiftler ve arkadaş grupları için konum tabanlı aktivite öneri uygulaması. 'Bugün ne yapsak?' sorusuna cevap verir."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  confetti: ^0.7.0
+  geolocator: ^13.0.1
+  http: ^1.2.2
+  url_launcher: ^6.3.0
+  audioplayers: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/sounds/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#7C4DFF"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"

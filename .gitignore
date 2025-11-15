@@ -1,0 +1,68 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+flutter_*.png
+
+# Generated plugin registrant
+lib/generated_plugin_registrant.dart
+
+# IntelliJ / Android Studio
+*.iml
+.idea/
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+# macOS / iOS
+**/Pods/
+**/.symlinks/
+**/Flutter/ephemeral/
+**/Flutter/Flutter.framework
+**/Flutter/Flutter.podspec
+**/Flutter/App.framework
+**/Flutter/flutter_export_environment.sh
+
+# Xcode specific
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+*.xcuserstate
+*.xcscmblueprint
+Runner.xcodeproj/project.xcworkspace/
+Runner.xcworkspace/
+
+# CocoaPods
+Podfile.lock
+
+# Android specific
+**/android/.gradle/
+**/android/local.properties
+**/android/.idea/
+**/android/app/build/
+**/android/build/
+**/android/captures/
+**/android/app/*.keystore
+**/android/key.properties
+
+# Keystore (do NOT commit!)
+*.jks
+*.keystore
+
+# Google Services / API keys (optional but recommended)
+google-services.json
+GoogleService-Info.plist
+
+# Desktop OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Flutter web (if accidentally generated)
+web/
