@@ -1,6 +1,6 @@
 # Ne Yapsak?
 
-<img src="docs/screenshots/app_ui.png" alt="Ne Yapsak arayüzü" width="350" />
+<img src="docs/screenshots/app_ui_1.png" alt="Ne Yapsak arayüzü 1" width="250" /> <img src="docs/screenshots/app_ui_2.png" alt="Ne Yapsak arayüzü 2" width="250" /> <img src="docs/screenshots/app_ui_3.png" alt="Ne Yapsak arayüzü 3" width="250" />
 
 Ne Yapsak?, bulunduğunuz konuma yakın yapılacak aktiviteleri hızlıca gösteren basit bir Flutter uygulamasıdır.  
 Konum izni verdikten sonra tek dokunuşla rastgele bir aktivite, motivasyon mesajı, görsel ve bu aktiviteyle ilgili yakın yer önerileri görürsünüz.
