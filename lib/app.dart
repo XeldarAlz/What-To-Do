@@ -10,7 +10,9 @@ class WhatToDoApp extends StatelessWidget {
     return MaterialApp(
       title: 'Ne Yapalım?',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.theme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system, // Automatically switches based on device settings
       home: const HomePage(),
     );
   }
