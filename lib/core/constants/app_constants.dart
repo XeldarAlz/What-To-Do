@@ -27,8 +27,8 @@ class AppConstants {
   static const double activityCardTextSpacing = 12.0;
   static const double activityCardGradientOverlayTopOpacity = 0.3;
   static const double activityCardGradientOverlayBottomOpacity = 0.7;
-  static const Color activityCardGradientStart = Color(0xFF7C4DFF);
-  static const Color activityCardGradientEnd = Color(0xFF512DA8);
+  // Colors moved to AppColors for better theme management
+  // Use AppColors.activityCardGradientStart and AppColors.activityCardGradientEnd
 
   // ---------------------------------------------------------------------------
   // Activity Card – Emoji Badge
@@ -81,7 +81,8 @@ class AppConstants {
   static const double headerIconSpacingPercent = 0.02;
   static const double headerContainerPaddingPercent = 0.04;
   static const double headerButtonSpacingPercent = 0.03;
-  static const Color headerBackgroundColor = Color(0xFFF5F2F8);
+  // Colors moved to AppColors for better theme management
+  // Use AppColors.headerBackgroundColor
 
   // ---------------------------------------------------------------------------
   // Dropdown
