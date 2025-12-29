@@ -10,110 +10,118 @@
 
 A simple Flutter application that quickly shows activities to do near your location. After granting location permission, with a single tap you'll see a random activity, motivational message, image, and nearby place suggestions related to that activity.
 
-The app is organized into feature-focused packages like `location`, `activities`, `places`, `home`, and `audio`, and works with Google Maps / Places API.
+The app is organized into feature-focused modules and works with Google Maps / Places API.
 
 <img src="docs/screenshots/app_ui_1.png" alt="What Should We Do interface 1" width="250" /> <img src="docs/screenshots/app_ui_2.png" alt="What Should We Do interface 2" width="250" /> <img src="docs/screenshots/app_ui_3.png" alt="What Should We Do interface 3" width="250" />
 
-## Features
+## ✨ Features
 
-- **Random Activity Generation**:  
-  After getting your location, the "What should we do?" button generates a random activity, message, and image.
+- **🎲 Random Activity Generation**  
+  Get personalized activity suggestions based on your location with motivational messages and beautiful visuals.
 
-- **Nearby Place Suggestions**:  
-  Places suitable for the selected activity in the nearby area are fetched from Google Places.
+- **📍 Nearby Place Suggestions**  
+  Discover places suitable for your selected activity using Google Places API with real-time distance calculations.
 
-- **Sorting and Pagination**:  
-  Place results are sorted by distance, displayed in chunks (pagination), and more results can be loaded if desired.
+- **📊 Smart Sorting & Pagination**  
+  Results are intelligently sorted by distance and displayed efficiently with pagination support.
 
-- **Rich Visual Experience**:  
-  Activity cards are enhanced with animations, gradients, and confetti effects; images can be fetched from Unsplash.
+- **🎨 Rich Visual Experience**  
+  Beautiful activity cards with smooth animations, gradients, and confetti effects. High-quality images from Unsplash.
 
-- **Feedback and Sound Effects**:  
-  Successful results provide user feedback with light vibration, confetti, and star sound effects.
+- **🔔 Interactive Feedback**  
+  Haptic feedback, confetti animations, and sound effects enhance the user experience.
 
-## Architecture Overview
+## 🏗️ Architecture
 
-The project is structured under `lib/` following a feature-first approach:
+The project follows a **feature-first architecture** with clear separation of concerns:
 
-- **`core/`**
-  - Common constants (`app_constants.dart`)
-  - Theme definition (`app_theme.dart`)
-  - Common exports (`core.dart`)
+### 🎯 Core Layer
+Shared utilities and configurations used across the entire application:
+- **Constants**: App-wide configuration values and dimensions
+- **Theme System**: Comprehensive color palette, typography, and Material 3 theming with full dark mode support
+- **Gradients**: Reusable gradient definitions for visual consistency
 
-- **`features/activities/`**
-  - `models/activity.dart`: Activity model
-  - `data/activity_repository.dart`: Manages activity list and categories
-  - `data/message_repository.dart`: Generates messages accompanying activities
-  - `data/unsplash_service.dart`: Fetches random images suitable for activities from Unsplash API
+### 📦 Feature Modules
 
-- **`features/location/`**
-  - `location_service.dart`:  
-    - Checks location permissions  
-    - Gets the user's current location  
-    - Throws custom `LocationException` in error cases
+#### **Activities**
+Manages activity data and content generation:
+- Activity models and categories
+- Motivational message generation
+- Image fetching from Unsplash API
 
-- **`features/places/`**
-  - `data/places_repository.dart`:  
-    - Searches for nearby places via Google Places API  
-    - Converts place results to project-specific models
-  - `models/place_suggestion.dart`: Place suggestion model
-  - `utils/places_sorter.dart`: Sorts places by distance and other criteria
+#### **Location**
+Handles all location-related functionality:
+- Permission management
+- Current location retrieval
+- Error handling with custom exceptions
 
-- **`features/audio/`**
-  - `sound_service.dart`: Plays success sound using `assets/sounds/star_sparkle.mp3` file
-  - `audio.dart`: Feature export file
+#### **Places**
+Integrates with Google Places API:
+- Nearby place search and discovery
+- Place data transformation and modeling
+- Distance-based sorting algorithms
 
-- **`features/home/`**
-  - `presentation/home_page.dart`:  
-    - Location permission request  
-    - Activity generation flow  
-    - Display, sorting, and "load more" functionality for place list  
-    - Error message display  
-  - `widgets/activity_result_card.dart`: Displays activity card
-  - `widgets/place_result_tile.dart`: Displays place row
-  - `utils/activity_generator.dart`:  
-    - Orchestration class that generates activity, message, image, and place results together
+#### **Audio**
+Provides audio feedback:
+- Sound effect playback
+- Asset management for audio resources
 
-- **`main.dart` & `app.dart`**
-  - `main.dart`: Application entry point
-  - `app.dart`:  
-    - `MaterialApp` configuration  
-    - Title (`What Should We Do?`), theme, and `HomePage` as the starting screen
+#### **Home**
+Main UI and user interaction:
+- Activity generation orchestration
+- Location permission flow
+- Place list display with sorting and pagination
+- Error state management
+- Reusable UI components (cards, tiles)
 
-## API Keys and Running
+### 🔄 Data Flow
 
-The app works with Google Maps / Places and optionally Unsplash API keys.
-
-- **Google Maps / Places API**: Used for nearby place suggestions.
-- **Unsplash API** (optional): Used for activity images.
-
-You can run the app in development environment as follows:
-
-```bash
-flutter pub get
-flutter run \
-  --dart-define=GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_KEY \
-  --dart-define=UNSPLASH_API_KEY=YOUR_UNSPLASH_KEY
+```
+User Action → Location Service → Activity Generator → 
+Places Repository → UI Components → User Feedback
 ```
 
-The Unsplash key is optional but recommended for a richer visual experience.  
-Remember to manage API keys securely using `.env`-like environment variables or CI settings.
+## 🚀 Getting Started
 
-## Technologies
+### Prerequisites
 
-- **Flutter** (customized, close to Material 3 theme)
-- **geolocator**: Location permission and coordinate retrieval
-- **url_launcher**: Opening places via Google Maps
-- **confetti**: Confetti animation
-- **audioplayers**: Success sounds
+- Flutter SDK (>=3.10.0)
+- Google Maps / Places API key
+- Unsplash API key (optional, but recommended)
 
-## License
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+
+3. Run the app with API keys:
+   ```bash
+   flutter run \
+     --dart-define=GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_KEY \
+     --dart-define=UNSPLASH_API_KEY=YOUR_UNSPLASH_KEY
+   ```
+
+> **Note**: The Unsplash API key is optional but recommended for a richer visual experience. Always manage API keys securely using environment variables or CI/CD settings.
+
+## 🛠️ Tech Stack
+
+- **Framework**: Flutter with Material 3 design
+- **Location**: Geolocator for location services
+- **Maps**: Google Maps / Places API integration
+- **Images**: Unsplash API for high-quality visuals
+- **Animations**: Confetti effects and smooth transitions
+- **Audio**: Audio players for sound feedback
+
+## 📄 License
 
 This project is licensed under a **Non-Commercial License**. See the [LICENSE](LICENSE) file for details.
 
-**Non-Commercial Use Only**: This software and associated documentation files (the "Software") are provided for personal, educational, and non-commercial use only. You may not use this Software for any commercial purpose without explicit written permission from the copyright holder.
+**Non-Commercial Use Only**: This software is provided for personal, educational, and non-commercial use only. Commercial use requires explicit written permission from the copyright holder.
 
-## Sponsors
+## 💝 Sponsors
 
 If you find this project useful, consider supporting it:
 
