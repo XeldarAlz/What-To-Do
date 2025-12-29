@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:what_to_do_app/core/core.dart';
 import 'package:what_to_do_app/features/places/places.dart';
 
 class PlaceResultTile extends StatelessWidget {
@@ -20,12 +21,12 @@ class PlaceResultTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBackground,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+          border: Border.all(color: context.borderColor),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: AppColors.black.withValues(alpha: 0.04),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -78,7 +79,7 @@ class PlaceResultTile extends StatelessWidget {
             Text(
               suggestion.address,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.black54,
+                color: context.textSecondary,
               ),
             ),
             const SizedBox(height: 17),
@@ -87,10 +88,10 @@ class PlaceResultTile extends StatelessWidget {
                 if (suggestion.distanceText != null)
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.place_outlined,
                         size: 18,
-                        color: Colors.black54,
+                        color: context.textSecondary,
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -107,10 +108,10 @@ class PlaceResultTile extends StatelessWidget {
                 if (suggestion.userRatingsTotal != null)
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.mode_comment_outlined,
                         size: 18,
-                        color: Colors.black54,
+                        color: context.textSecondary,
                       ),
                       const SizedBox(width: 4),
                       Text(

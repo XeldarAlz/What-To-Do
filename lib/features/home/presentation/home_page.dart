@@ -571,7 +571,7 @@ class _Header extends StatelessWidget {
                   Text(
                     'Konumunu alalım, sana yakın öneriler sunalım. 📍',
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.black87,
+                      color: context.textPrimary,
                       height: 1.4,
                     ),
                   )

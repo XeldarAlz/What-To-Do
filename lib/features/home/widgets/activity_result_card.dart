@@ -24,7 +24,7 @@ class ActivityResultCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.deepPurple.withValues(
+            color: AppColors.primary500.withValues(
               alpha: AppConstants.activityCardShadowOpacity,
             ),
             blurRadius: AppConstants.activityCardShadowBlur,
@@ -50,8 +50,8 @@ class ActivityResultCard extends StatelessWidget {
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          AppConstants.activityCardGradientStart,
-                          AppConstants.activityCardGradientEnd,
+                          AppColors.activityCardGradientStart,
+                          AppColors.activityCardGradientEnd,
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -65,8 +65,8 @@ class ActivityResultCard extends StatelessWidget {
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppConstants.activityCardGradientStart,
-                      AppConstants.activityCardGradientEnd,
+                      AppColors.activityCardGradientStart,
+                      AppColors.activityCardGradientEnd,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
