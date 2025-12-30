@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -67,6 +69,8 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _confettiController.dispose();
     _soundService.dispose();
+    _placesRepository.dispose();
+    _unsplashService.dispose();
     super.dispose();
   }
 
@@ -126,12 +130,25 @@ class _HomePageState extends State<HomePage> {
       _error = null;
     });
 
-    await Future<void>.delayed(AppConstants.loadingAnimationDuration);
-
     try {
+      // Keep the spinner visible briefly to avoid a “flash” on fast networks,
+      // but don't add a fixed delay to every request.
+      final stopwatch = Stopwatch()..start();
       final result = await _activityGenerator.generate(_currentPosition!);
 
       if (!mounted) return;
+
+      final elapsed = stopwatch.elapsed;
+      const minSpinner = Duration(milliseconds: 250);
+      if (elapsed < minSpinner) {
+        await Future<void>.delayed(minSpinner - elapsed);
+        if (!mounted) return;
+      }
+
+      if (result.imageUrl != null) {
+        // Warm the image cache without blocking UI updates.
+        unawaited(precacheImage(NetworkImage(result.imageUrl!), context));
+      }
 
       final sortedPlaces = PlacesSorter.sort(result.places, _sortOption);
       final initialCount =
@@ -357,14 +374,16 @@ class _HomePageState extends State<HomePage> {
             ),
             Align(
               alignment: Alignment.topCenter,
-              child: ConfettiWidget(
-                confettiController: _confettiController,
-                blastDirectionality: BlastDirectionality.explosive,
-                maxBlastForce: AppConstants.confettiMaxBlastForce,
-                minBlastForce: AppConstants.confettiMinBlastForce,
-                emissionFrequency: AppConstants.confettiEmissionFrequency,
-                numberOfParticles: AppConstants.confettiParticleCount,
-                gravity: AppConstants.confettiGravity,
+              child: RepaintBoundary(
+                child: ConfettiWidget(
+                  confettiController: _confettiController,
+                  blastDirectionality: BlastDirectionality.explosive,
+                  maxBlastForce: AppConstants.confettiMaxBlastForce,
+                  minBlastForce: AppConstants.confettiMinBlastForce,
+                  emissionFrequency: AppConstants.confettiEmissionFrequency,
+                  numberOfParticles: AppConstants.confettiParticleCount,
+                  gravity: AppConstants.confettiGravity,
+                ),
               ),
             ),
           ],

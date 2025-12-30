@@ -39,22 +39,29 @@ class ActivityGenerator {
     final activity = _activityRepository.nextActivity;
     final message = _messageRepository.nextMessage;
 
-    String? imageUrl;
-    try {
-      imageUrl = await _unsplashService.getImageUrl(
-        query: activity.imageSearchQuery,
-      );
-      await _unsplashService.preloadImage(imageUrl);
-    } catch (_) {
-      imageUrl = null;
-    }
+    // Fetch image URL (best-effort) and nearby places in parallel to reduce
+    // perceived latency.
+    final imageFuture = () async {
+      if (_unsplashService.apiKey.isEmpty) return null;
+      try {
+        return await _unsplashService.getImageUrl(
+          query: activity.imageSearchQuery,
+        );
+      } catch (_) {
+        return null;
+      }
+    }();
 
-    final places = await _placesRepository.fetchNearby(
+    final placesFuture = _placesRepository.fetchNearby(
       query: activity.query,
       latitude: position.latitude,
       longitude: position.longitude,
       limit: AppConstants.maxPlacesToFetch,
     );
+
+    final results = await Future.wait<dynamic>([imageFuture, placesFuture]);
+    final imageUrl = results[0] as String?;
+    final places = results[1] as List<PlaceSuggestion>;
 
     return ActivityGeneratorResult(
       activity: activity,

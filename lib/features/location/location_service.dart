@@ -34,7 +34,10 @@ class LocationService {
     }
 
     return Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+      // High accuracy can be noticeably slower and more battery intensive.
+      // Medium is sufficient for nearby place suggestions.
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
+      timeLimit: const Duration(seconds: 10),
     );
   }
 }

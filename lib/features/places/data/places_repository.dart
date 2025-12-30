@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:collection';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -20,13 +21,26 @@ class PlacesRepository {
 
   final String apiKey;
   final http.Client _client;
+  final _cache = LinkedHashMap<String, _PlacesCacheEntry>();
+
+  void dispose() => _client.close();
 
   Future<List<PlaceSuggestion>> fetchNearby({
     required String query,
     required double latitude,
     required double longitude,
     int limit = 5,
+    Duration cacheTtl = const Duration(minutes: 2),
   }) async {
+    // Cache by coarse location to avoid repeated calls while the user
+    // regenerates/sorts quickly from the same spot.
+    final cacheKey =
+        '$query|${latitude.toStringAsFixed(3)}|${longitude.toStringAsFixed(3)}|$limit';
+    final cached = _cache[cacheKey];
+    if (cached != null && !cached.isExpired(cacheTtl)) {
+      return cached.places;
+    }
+
     final uri = Uri.https(
       'maps.googleapis.com',
       '/maps/api/place/textsearch/json',
@@ -59,7 +73,7 @@ class PlacesRepository {
     final results = (decoded['results'] as List<dynamic>? ?? [])
         .cast<Map<String, dynamic>>();
 
-    return results.take(limit).map((place) {
+    final parsed = results.take(limit).map((place) {
       final geometry = place['geometry'] as Map<String, dynamic>?;
       final location = geometry?['location'] as Map<String, dynamic>? ?? {};
       final lat = (location['lat'] as num?)?.toDouble();
@@ -104,6 +118,23 @@ class PlacesRepository {
         mapUrl: url,
       );
     }).toList();
+
+    _cache.remove(cacheKey);
+    _cache[cacheKey] = _PlacesCacheEntry(places: parsed, createdAt: DateTime.now());
+    if (_cache.length > 32) {
+      _cache.remove(_cache.keys.first);
+    }
+
+    return parsed;
   }
+}
+
+class _PlacesCacheEntry {
+  _PlacesCacheEntry({required this.places, required this.createdAt});
+
+  final List<PlaceSuggestion> places;
+  final DateTime createdAt;
+
+  bool isExpired(Duration ttl) => DateTime.now().difference(createdAt) > ttl;
 }
 
