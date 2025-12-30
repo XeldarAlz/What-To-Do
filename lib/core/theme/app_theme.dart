@@ -4,7 +4,6 @@ import 'app_colors.dart';
 import 'package:what_to_do_app/core/constants/app_constants.dart';
 
 class AppTheme {
-  // Legacy static colors (backward compatibility)
   static const Color primaryColor = AppColors.primary500;
   static const Color secondaryColor = AppColors.secondary600;
   static const Color tertiaryColor = AppColors.accent300;
@@ -18,16 +17,12 @@ class AppTheme {
   static const Color darkCard = AppColors.secondary800;
   static const Color darkBackground = AppColors.secondary950;
 
-  // ============================================
-  // LIGHT THEME
-  // ============================================
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       fontFamily: 'Roboto',
       brightness: Brightness.light,
 
-      // Colors
       scaffoldBackgroundColor: AppColors.secondary50,
       primaryColor: AppColors.primary500,
 
@@ -55,7 +50,6 @@ class AppTheme {
         outlineVariant: AppColors.neutral200,
       ),
 
-      // App Bar
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
@@ -74,7 +68,6 @@ class AppTheme {
         ),
       ),
 
-      // Card
       cardTheme: CardThemeData(
         elevation: 0,
         color: AppColors.white,
@@ -85,13 +78,11 @@ class AppTheme {
         ),
       ),
 
-      // Divider
       dividerTheme: const DividerThemeData(
         color: AppColors.secondary200,
         thickness: 1,
       ),
 
-      // Input
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.white,
@@ -119,7 +110,6 @@ class AppTheme {
         ),
       ),
 
-      // Buttons
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary500,
@@ -160,7 +150,6 @@ class AppTheme {
         style: TextButton.styleFrom(foregroundColor: AppColors.primary600),
       ),
 
-      // Chip
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.primary100,
         labelStyle: const TextStyle(color: AppColors.primary700),
@@ -168,13 +157,11 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
 
-      // Progress Indicator
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: AppColors.primary500,
         linearTrackColor: AppColors.primary100,
       ),
 
-      // Snackbar
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.neutral900,
         contentTextStyle: const TextStyle(color: AppColors.neutral50),
@@ -182,14 +169,12 @@ class AppTheme {
         behavior: SnackBarBehavior.floating,
       ),
 
-      // Dialog
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.white,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
 
-      // Bottom Sheet
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: AppColors.white,
         surfaceTintColor: Colors.transparent,
@@ -198,21 +183,16 @@ class AppTheme {
         ),
       ),
 
-      // Text Theme
       textTheme: _buildTextTheme(isDark: false),
     );
   }
 
-  // ============================================
-  // DARK THEME
-  // ============================================
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
       fontFamily: 'Roboto',
       brightness: Brightness.dark,
 
-      // Colors
       scaffoldBackgroundColor: AppColors.secondary950,
       primaryColor: AppColors.primary500,
 
@@ -240,7 +220,6 @@ class AppTheme {
         outlineVariant: AppColors.neutral50.withValues(alpha: 0.1),
       ),
 
-      // App Bar
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
@@ -259,7 +238,6 @@ class AppTheme {
         ),
       ),
 
-      // Card
       cardTheme: CardThemeData(
         elevation: 0,
         color: AppColors.secondary800.withValues(alpha: 0.6),
@@ -273,13 +251,11 @@ class AppTheme {
         ),
       ),
 
-      // Divider
       dividerTheme: DividerThemeData(
         color: AppColors.primary500.withValues(alpha: 0.3),
         thickness: 1,
       ),
 
-      // Input
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.secondary800,
@@ -311,7 +287,6 @@ class AppTheme {
         ),
       ),
 
-      // Buttons
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary500,
@@ -351,7 +326,6 @@ class AppTheme {
         style: TextButton.styleFrom(foregroundColor: AppColors.primary400),
       ),
 
-      // Chip
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.primary500.withValues(alpha: 0.15),
         labelStyle: const TextStyle(color: AppColors.primary300),
@@ -359,13 +333,11 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
 
-      // Progress Indicator
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: AppColors.primary500,
         linearTrackColor: AppColors.secondary800,
       ),
 
-      // Snackbar
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.secondary800,
         contentTextStyle: const TextStyle(color: AppColors.neutral50),
@@ -373,14 +345,12 @@ class AppTheme {
         behavior: SnackBarBehavior.floating,
       ),
 
-      // Dialog
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.secondary900,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
 
-      // Bottom Sheet
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: AppColors.secondary900,
         surfaceTintColor: Colors.transparent,
@@ -389,17 +359,12 @@ class AppTheme {
         ),
       ),
 
-      // Text Theme
       textTheme: _buildTextTheme(isDark: true),
     );
   }
 
-  // Legacy getter for backward compatibility
   static ThemeData get theme => lightTheme;
 
-  // ============================================
-  // TEXT THEME
-  // ============================================
   static TextTheme _buildTextTheme({required bool isDark}) {
     final Color primaryText = isDark ? AppColors.white : AppColors.neutral900;
     final Color secondaryText = isDark
@@ -506,9 +471,6 @@ class AppTheme {
   }
 }
 
-// ============================================
-// THEME EXTENSION
-// ============================================
 extension AppThemeExtension on BuildContext {
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
 
@@ -528,7 +490,6 @@ extension AppThemeExtension on BuildContext {
   Color get surfaceColor =>
       isDarkMode ? AppColors.secondary900 : AppColors.white;
 
-  // New helper methods
   Color get borderColor => isDarkMode
       ? AppColors.primary500.withValues(alpha: 0.3)
       : AppColors.secondary200;
@@ -542,7 +503,6 @@ extension AppThemeExtension on BuildContext {
   Color get shimmerHighlight =>
       isDarkMode ? AppColors.secondary900 : AppColors.neutral100;
 
-  /// Glassmorphism decoration
   BoxDecoration get glassDecoration {
     return BoxDecoration(
       color: isDarkMode
@@ -553,7 +513,6 @@ extension AppThemeExtension on BuildContext {
     );
   }
 
-  /// Primary glow (dark mode only)
   List<BoxShadow>? get primaryGlow {
     if (!isDarkMode) return null;
     return [

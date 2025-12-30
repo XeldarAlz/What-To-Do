@@ -32,8 +32,6 @@ class PlacesRepository {
     int limit = 5,
     Duration cacheTtl = const Duration(minutes: 2),
   }) async {
-    // Cache by coarse location to avoid repeated calls while the user
-    // regenerates/sorts quickly from the same spot.
     final cacheKey =
         '$query|${latitude.toStringAsFixed(3)}|${longitude.toStringAsFixed(3)}|$limit';
     final cached = _cache[cacheKey];

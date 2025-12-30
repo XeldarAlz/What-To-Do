@@ -132,8 +132,6 @@ class _HomePageState extends State<HomePage> {
     });
 
     try {
-      // Keep the spinner visible briefly to avoid a “flash” on fast networks,
-      // but don't add a fixed delay to every request.
       final stopwatch = Stopwatch()..start();
       final result = await _activityGenerator.generate(_currentPosition!);
 
@@ -147,7 +145,6 @@ class _HomePageState extends State<HomePage> {
       }
 
       if (result.imageUrl != null) {
-        // Warm the image cache without blocking UI updates.
         unawaited(precacheImage(NetworkImage(result.imageUrl!), context));
       }
 
@@ -167,7 +164,6 @@ class _HomePageState extends State<HomePage> {
         _isGeneratingActivity = false;
       });
 
-      // Smoothly bring results into view.
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         final context = _placesSectionKey.currentContext;

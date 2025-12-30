@@ -39,8 +39,6 @@ class ActivityGenerator {
     final activity = _activityRepository.nextActivity;
     final message = _messageRepository.nextMessage;
 
-    // Fetch image URL (best-effort) and nearby places in parallel to reduce
-    // perceived latency.
     final imageFuture = () async {
       if (_unsplashService.apiKey.isEmpty) return null;
       try {

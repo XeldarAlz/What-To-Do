@@ -19,7 +19,6 @@ class UnsplashService {
   final http.Client _client;
   final _cache = LinkedHashMap<String, _UnsplashCacheEntry>();
 
-  /// Close the underlying HTTP client if you created this service.
   void dispose() => _client.close();
 
   Future<String> getImageUrl({
@@ -68,7 +67,6 @@ class UnsplashService {
         throw const UnsplashException('No image URL found in response');
       }
 
-      // Small LRU-like cache: keep most recent ~32 queries.
       _cache.remove(query);
       _cache[query] = _UnsplashCacheEntry(url: regularUrl, createdAt: DateTime.now());
       if (_cache.length > 32) {

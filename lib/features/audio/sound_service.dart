@@ -10,7 +10,6 @@ class SoundService {
     try {
       await _player.play(AssetSource(AppConstants.soundAssetPath));
     } catch (_) {
-      // Silently fail if sound file doesn't exist
     }
   }
 
