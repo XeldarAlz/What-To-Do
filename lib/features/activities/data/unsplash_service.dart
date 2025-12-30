@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:collection';
 
 import 'package:http/http.dart' as http;
 
@@ -17,14 +17,23 @@ class UnsplashService {
 
   final String apiKey;
   final http.Client _client;
+  final _cache = LinkedHashMap<String, _UnsplashCacheEntry>();
+
+  void dispose() => _client.close();
 
   Future<String> getImageUrl({
     required String query,
     int width = 800,
     int height = 600,
+    Duration cacheTtl = const Duration(minutes: 2),
   }) async {
     if (apiKey.isEmpty) {
       throw const UnsplashException('Unsplash API key is required');
+    }
+
+    final cached = _cache[query];
+    if (cached != null && !cached.isExpired(cacheTtl)) {
+      return cached.url;
     }
 
     final uri = Uri.https(
@@ -58,9 +67,13 @@ class UnsplashService {
         throw const UnsplashException('No image URL found in response');
       }
 
+      _cache.remove(query);
+      _cache[query] = _UnsplashCacheEntry(url: regularUrl, createdAt: DateTime.now());
+      if (_cache.length > 32) {
+        _cache.remove(_cache.keys.first);
+      }
+
       return regularUrl;
-    } on SocketException {
-      throw const UnsplashException('Network error: Check your internet connection');
     } on http.ClientException {
       throw const UnsplashException('Network error: Unable to reach Unsplash API');
     } catch (e) {
@@ -68,24 +81,14 @@ class UnsplashService {
       throw UnsplashException('Failed to fetch image: ${e.toString()}');
     }
   }
+}
 
-  Future<bool> preloadImage(String imageUrl) async {
-    try {
-      final uri = Uri.parse(imageUrl);
-      final client = HttpClient();
-      try {
-        final request = await client.getUrl(uri);
-        request.followRedirects = true;
-        final response = await request.close().timeout(
-              const Duration(seconds: 5),
-            );
-        return response.statusCode == 200;
-      } finally {
-        client.close();
-      }
-    } catch (_) {
-      return false;
-    }
-  }
+class _UnsplashCacheEntry {
+  _UnsplashCacheEntry({required this.url, required this.createdAt});
+
+  final String url;
+  final DateTime createdAt;
+
+  bool isExpired(Duration ttl) => DateTime.now().difference(createdAt) > ttl;
 }
 

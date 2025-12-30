@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
-/// Gradient definitions for What To Do app
 abstract class AppGradients {
-  /// Main background gradient (Dark mode)
   static const LinearGradient backgroundDark = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
@@ -11,7 +9,6 @@ abstract class AppGradients {
     stops: [0.0, 0.5, 1.0],
   );
 
-  /// Main background gradient (Light mode)
   static const LinearGradient backgroundLight = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
@@ -19,28 +16,24 @@ abstract class AppGradients {
     stops: [0.0, 0.5, 1.0],
   );
 
-  /// Primary gradient (buttons, CTAs)
   static const LinearGradient primary = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [AppColors.primary500, AppColors.primary700],
   );
 
-  /// Activity card gradient
   static const LinearGradient activityCard = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [AppColors.primary500, AppColors.secondary600],
   );
 
-  /// Accent gradient (special highlights)
   static const LinearGradient accent = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [AppColors.accent500, AppColors.accent700],
   );
 
-  /// Card gradient for dark mode
   static LinearGradient cardDark = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -50,7 +43,6 @@ abstract class AppGradients {
     ],
   );
 
-  /// Shimmer gradient
   static LinearGradient shimmer(bool isDark) {
     return LinearGradient(
       begin: Alignment.topLeft,

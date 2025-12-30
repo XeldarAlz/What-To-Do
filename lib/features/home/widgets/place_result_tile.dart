@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:what_to_do_app/core/core.dart';
 import 'package:what_to_do_app/features/places/places.dart';
 
@@ -15,24 +16,47 @@ class PlaceResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: context.cardBackground,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: context.borderColor),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
+    final borderRadius = BorderRadius.circular(20);
+    final decoration = BoxDecoration(
+      color: context.cardBackground,
+      borderRadius: borderRadius,
+      border: Border.all(color: context.borderColor),
+      boxShadow: [
+        BoxShadow(
+          color: AppColors.black.withValues(alpha: 0.04),
+          blurRadius: 12,
+          offset: const Offset(0, 6),
         ),
-        child: Column(
+      ],
+    );
+
+    return Material(
+      color: Colors.transparent,
+      borderRadius: borderRadius,
+      clipBehavior: Clip.antiAlias,
+      child: Ink(
+        decoration: decoration,
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onTap();
+          },
+          borderRadius: borderRadius,
+          splashFactory: InkSparkle.splashFactory,
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            final base = theme.colorScheme.primary;
+            if (states.contains(WidgetState.pressed)) {
+              return base.withValues(alpha: 0.10);
+            }
+            if (states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused)) {
+              return base.withValues(alpha: 0.06);
+            }
+            return null;
+          }),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -139,6 +163,8 @@ class PlaceResultTile extends StatelessWidget {
               ],
             ),
           ],
+            ),
+          ),
         ),
       ),
     );
