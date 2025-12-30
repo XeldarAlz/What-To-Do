@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   late final ConfettiController _confettiController;
   late final SoundService _soundService;
   late final ActivityGenerator _activityGenerator;
+  final _placesSectionKey = GlobalKey();
 
   Position? _currentPosition;
   Activity? _currentActivity;
@@ -166,6 +167,19 @@ class _HomePageState extends State<HomePage> {
         _isGeneratingActivity = false;
       });
 
+      // Smoothly bring results into view.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final context = _placesSectionKey.currentContext;
+        if (context == null) return;
+        Scrollable.ensureVisible(
+          context,
+          duration: const Duration(milliseconds: 550),
+          curve: Curves.easeOutCubic,
+          alignment: 0.1,
+        );
+      });
+
       if (result.places.isNotEmpty) {
         _confettiController.play();
         HapticFeedback.lightImpact();
@@ -241,15 +255,21 @@ class _HomePageState extends State<HomePage> {
         'list-${_sortOption.name}-$_visibleCount-${_allPlaces.length}',
       ),
       children: [
-        ..._visiblePlaces.map(
-          (place) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: PlaceResultTile(
-              suggestion: place,
-              onTap: () => _openMaps(place),
+        ..._visiblePlaces.asMap().entries.map((entry) {
+          final index = entry.key;
+          final place = entry.value;
+          return _StaggeredFadeSlideIn(
+            key: ValueKey('place-${place.placeId}-${_sortOption.name}-$index'),
+            index: index,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: PlaceResultTile(
+                suggestion: place,
+                onTap: () => _openMaps(place),
+              ),
             ),
-          ),
-        ),
+          );
+        }),
         Padding(
           padding: const EdgeInsets.only(top: 8),
           child: OutlinedButton(
@@ -331,10 +351,21 @@ class _HomePageState extends State<HomePage> {
                         ),
                         elevation: AppConstants.buttonElevation,
                       ),
-                      child: Text(
-                        _currentActivity == null
-                            ? 'Ne yapalım?'
-                            : 'Yeni bir aktivite',
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeInCubic,
+                        transitionBuilder: _fadeSlideTransitionBuilder,
+                        child: _isGeneratingActivity
+                            ? const _ButtonLoadingLabel(key: ValueKey('loading'))
+                            : Text(
+                                _currentActivity == null
+                                    ? 'Ne yapalım?'
+                                    : 'Yeni bir aktivite',
+                                key: ValueKey(
+                                  'label-${_currentActivity == null ? 'first' : 'next'}',
+                                ),
+                              ),
                       ),
                     )
                   else
@@ -358,17 +389,41 @@ class _HomePageState extends State<HomePage> {
                   if (_currentActivity != null)
                     Text(
                       'Aktiviteye bağlı yerler',
+                      key: _placesSectionKey,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   const SizedBox(height: 12),
-                  if (_allPlaces.isNotEmpty) _buildSortDropdown(theme),
                   AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 250),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: _fadeSlideTransitionBuilder,
+                    child: _allPlaces.isNotEmpty
+                        ? _buildSortDropdown(theme)
+                        : const SizedBox(key: ValueKey('no-sort')),
+                  ),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 320),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: _fadeSlideTransitionBuilder,
                     child: _buildPlacesContent(),
                   ),
-                  if (_error != null) _buildErrorDisplay(theme),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 260),
+                    curve: Curves.easeOutCubic,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 240),
+                      switchInCurve: Curves.easeOutCubic,
+                      switchOutCurve: Curves.easeInCubic,
+                      transitionBuilder: _fadeSlideTransitionBuilder,
+                      child: _error != null
+                          ? _buildErrorDisplay(theme)
+                          : const SizedBox(key: ValueKey('no-error')),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -389,6 +444,21 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  static Widget _fadeSlideTransitionBuilder(
+    Widget child,
+    Animation<double> animation,
+  ) {
+    final fade = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+    final slide = Tween<Offset>(
+      begin: const Offset(0, 0.06),
+      end: Offset.zero,
+    ).animate(fade);
+    return FadeTransition(
+      opacity: fade,
+      child: SlideTransition(position: slide, child: child),
     );
   }
 
@@ -662,79 +732,85 @@ class _ActivitySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Widget content;
     if (isGenerating) {
-      return const _LoadingCard(text: 'İlham aranıyor...');
-    }
+      content = const _LoadingCard(key: ValueKey('loading'), text: 'İlham aranıyor...');
+    } else if (activity == null) {
+      content = const _PlaceholderCard(key: ValueKey('placeholder'));
+    } else {
+      final highlightKey = ValueKey(
+        '${activity!.label}-${activity!.emoji ?? ''}',
+      );
 
-    if (activity == null) {
-      return const _PlaceholderCard();
-    }
-
-    final highlightKey = ValueKey(
-      '${activity!.label}-${activity!.emoji ?? ''}',
-    );
-
-    final highlightedCard = TweenAnimationBuilder<double>(
-      key: highlightKey,
-      tween: Tween(begin: 1.0, end: 0.0),
-      duration: AppConstants.activityHighlightDuration,
-      curve: Curves.easeOutCubic,
-      builder: (context, value, child) {
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            if (value > 0)
-              Positioned.fill(
-                child: IgnorePointer(
-                  ignoring: true,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        AppConstants.activityCardBorderRadius +
-                            AppConstants.activityHighlightBorderRadiusOffset,
-                      ),
-                      border: Border.all(
-                        color: AppConstants.activityHighlightColor.withOpacity(
-                          0.6 * value,
+      final highlightedCard = TweenAnimationBuilder<double>(
+        key: highlightKey,
+        tween: Tween(begin: 1.0, end: 0.0),
+        duration: AppConstants.activityHighlightDuration,
+        curve: Curves.easeOutCubic,
+        builder: (context, value, child) {
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              if (value > 0)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          AppConstants.activityCardBorderRadius +
+                              AppConstants.activityHighlightBorderRadiusOffset,
                         ),
-                        width:
-                            AppConstants.activityHighlightBorderWidth * value,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppConstants.activityHighlightColor
-                              .withOpacity(0.35 * value),
-                          blurRadius:
-                              AppConstants.activityHighlightMaxBlur * value,
-                          spreadRadius:
-                              AppConstants.activityHighlightMaxSpread * value,
+                        border: Border.all(
+                          color: AppConstants.activityHighlightColor.withOpacity(
+                            0.6 * value,
+                          ),
+                          width: AppConstants.activityHighlightBorderWidth * value,
                         ),
-                      ],
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppConstants.activityHighlightColor
+                                .withOpacity(0.35 * value),
+                            blurRadius:
+                                AppConstants.activityHighlightMaxBlur * value,
+                            spreadRadius:
+                                AppConstants.activityHighlightMaxSpread * value,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            child!,
-          ],
-        );
-      },
-      child: ActivityResultCard(activity: activity!, imageUrl: imageUrl),
-    );
+              child!,
+            ],
+          );
+        },
+        child: ActivityResultCard(activity: activity!, imageUrl: imageUrl),
+      );
 
-    return TweenAnimationBuilder<double>(
-      key: ValueKey('pop-${activity!.label}-${activity!.emoji ?? ''}'),
-      tween: Tween(begin: AppConstants.activityPopScaleBegin, end: 1.0),
-      duration: AppConstants.activityPopScaleDuration,
-      curve: Curves.easeOutBack,
-      child: highlightedCard,
-      builder: (context, scale, child) =>
-          Transform.scale(scale: scale, child: child),
+      content = TweenAnimationBuilder<double>(
+        key: ValueKey('pop-${activity!.label}-${activity!.emoji ?? ''}'),
+        tween: Tween(begin: AppConstants.activityPopScaleBegin, end: 1.0),
+        duration: AppConstants.activityPopScaleDuration,
+        curve: Curves.easeOutBack,
+        child: highlightedCard,
+        builder: (context, scale, child) =>
+            Transform.scale(scale: scale, child: child),
+      );
+    }
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: _HomePageState._fadeSlideTransitionBuilder,
+      child: content,
     );
   }
 }
 
 class _PlaceholderCard extends StatelessWidget {
-  const _PlaceholderCard();
+  const _PlaceholderCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -773,7 +849,7 @@ class _PlaceholderCard extends StatelessWidget {
 }
 
 class _LoadingCard extends StatelessWidget {
-  const _LoadingCard({required this.text});
+  const _LoadingCard({super.key, required this.text});
 
   final String text;
 
@@ -840,6 +916,71 @@ class _EmptyState extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ButtonLoadingLabel extends StatelessWidget {
+  const _ButtonLoadingLabel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      key: const ValueKey('button-loading'),
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 18,
+          height: 18,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.5,
+            color: theme.colorScheme.onPrimary,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          'Aranıyor...',
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: theme.colorScheme.onPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StaggeredFadeSlideIn extends StatelessWidget {
+  const _StaggeredFadeSlideIn({
+    super.key,
+    required this.index,
+    required this.child,
+  });
+
+  final int index;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final base = 240;
+    final extra = (index.clamp(0, 7)) * 55;
+    final duration = Duration(milliseconds: base + extra);
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: duration,
+      curve: Curves.easeOutCubic,
+      builder: (context, t, child) {
+        return Opacity(
+          opacity: t,
+          child: Transform.translate(
+            offset: Offset(0, (1 - t) * 14),
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 }
